@@ -7,7 +7,8 @@
 //
 
 #import "AppDelegate.h"
-
+#import "WelcomeController.h"
+#import "BaseTabBarController.h"
 @interface AppDelegate ()
 
 @end
@@ -17,7 +18,36 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    [self setStart];
     return YES;
+}
+
+//设置启动页
+- (void)setStart{
+    /////
+    NSDictionary  *infoDict = [[NSBundle mainBundle]infoDictionary];
+    
+    //    NSLog(@"infoDict:%@",infoDict);
+    NSString *key = @"CFBundleShortVersionString";
+    
+    NSString *currentVersion = infoDict[key];
+    NSString *runVersion = [[NSUserDefaults standardUserDefaults] stringForKey:key];
+    self.window = [[UIWindow alloc]initWithFrame:[UIScreen mainScreen].bounds];
+    [self.window makeKeyAndVisible];
+    
+    if (runVersion == nil || ![runVersion isEqualToString:currentVersion]) {
+        NSLog(@"欢迎界面");
+        WelcomeController *vc = [WelcomeController new];
+        self.window.rootViewController = vc;
+        [[NSUserDefaults standardUserDefaults] setValue:currentVersion forKey:key];
+    }else{
+        NSLog(@"显示主页面");
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+        BaseTabBarController *vc = [storyboard instantiateViewControllerWithIdentifier:@"BaseTabBarController"];
+        self.window.rootViewController = vc;
+        
+    }
+    
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
